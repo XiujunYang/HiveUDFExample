@@ -1,0 +1,9 @@
+target/
+bin/
+.settings/
+.classpath
+.project
+dependency-reduced-pom.xml
+*.log
+*.DS_Store
+src/example/hive/udf/ExtractGeoLocation.java

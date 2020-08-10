@@ -6,4 +6,4 @@ bin/
 dependency-reduced-pom.xml
 *.log
 *.DS_Store
-src/example/hive/udf/ExtractGeoLocation.java
+py_module/geopy_1_23_0/

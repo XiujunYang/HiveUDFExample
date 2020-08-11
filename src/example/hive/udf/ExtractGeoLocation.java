@@ -18,12 +18,10 @@ public class ExtractGeoLocation extends UDF {
 		props.put("python.console.encoding", "UTF-8");
 		props.put("python.security.respectJavaAccessibility", "false");
 		props.put("python.import.site", "false");
-		props.put("python.path", "py_module/geopy_1_23_0"); // python package under root_project/python_module folder
+		props.put("python.path", "py_module"); // python package under root_project/python_module folder
 		Properties preprops = System.getProperties();
 		PythonInterpreter.initialize(preprops, props, new String[0]);
 		interpreter = new PythonInterpreter();
-//		interpreter.exec("import sys");
-//		interpreter.exec("print(sys.path)");
 		interpreter.exec("from convert import *");
 	}
 	
@@ -31,7 +29,8 @@ public class ExtractGeoLocation extends UDF {
 	/**
 	 * extract address from location.
 	 */
-	public String evaluate(float lat, float lon, String language)  {
+	public String evaluate(double lat, double lon, String language) {
+		System.out.println("3 parms:" + String.valueOf(lat) + String.valueOf(lon) + language);
 		if(interpreter == null) init();
 		PyFunction pf = (PyFunction)interpreter.get("convert_to_address");
         String result = pf.__call__(new PyFloat(lat), new PyFloat(lon), (language == null || language.isEmpty())?new PyString("en"):new PyString(language))
@@ -44,6 +43,7 @@ public class ExtractGeoLocation extends UDF {
 	 * extract location(format=lat,lon) from address.
 	 */
 	public String evaluate(String addr, String language) {
+		System.out.println("2 parms:" + addr + language);
 		if(interpreter == null) init();
 		PyFunction pf = (PyFunction)interpreter.get("convert_to_location");
 		PyList result = (PyList) pf.__call__(new PyString(addr), (language == null || language.isEmpty())?new PyString("en"):new PyString(language));
@@ -59,23 +59,16 @@ public class ExtractGeoLocation extends UDF {
 	/** 
 	 * validate latitude and longitude(format=lat,lon) in specific area, such as country or city.
 	 */
-	public String evaluate(float lat, float lon, String includedInAddr, String language) {
+	public String evaluate(double lat, double lon, String includedInAddr, String language) {
 		if(interpreter == null) init();
 		PyFunction pf = (PyFunction)interpreter.get("convert_to_address");
 		String convert1 = pf.__call__(new PyFloat(lat), new PyFloat(lon), (language == null || language.isEmpty())?new PyString("en"):new PyString(language))
         		.asString();
 		String convert2 = pf.__call__(new PyFloat(lon), new PyFloat(lat), (language == null || language.isEmpty())?new PyString("en"):new PyString(language))
         		.asString();
-		float[] result = new float[2];
 		if (convert1 != null && !convert1.isEmpty() && convert1.contains(includedInAddr)) {
-			/*result[0] = lat;
-			result[1] = lon;
-			return result; //float[]*/
 			return String.valueOf(lat)+","+String.valueOf(lon);
 		} else if (convert2 != null && !convert2.isEmpty() && convert2.contains(includedInAddr)) {
-			/* result[0] = lon;
-			result[1] = lat;
-			return result; //float[]*/
 			return String.valueOf(lon)+","+String.valueOf(lat);
 		} else return null;
 	}
@@ -85,7 +78,7 @@ public class ExtractGeoLocation extends UDF {
 		String addr = "dubai mall";
 		if(interpreter == null) init();
 		PyFunction pf = (PyFunction)interpreter.get("convert_to_location");
-		PyList result = (PyList) pf.__call__(new PyString(addr));
+		PyList result = (PyList) pf.__call__(new PyString(addr), new PyString("en"));
 		if(result.size() == 0) System.out.println("size is zero");
 		Float arr[] = new Float[2];
 	    result.toArray(arr);

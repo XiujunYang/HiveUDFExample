@@ -1,7 +1,12 @@
 import os,sys
-module_path=os.path.join(os. getcwd() , 'geopy_1_23_0')
-if module_path not in sys.path:
-    sys.path.append(module_path)
+# for udf running, cause it's os.getcwd() is root folder of project
+module_path_from_app=os.path.join(os.getcwd() , 'py_module', 'geopy_1_23_0')
+# for python command runing
+module_path_from_python=os.path.join(os.getcwd() , 'geopy_1_23_0')
+if module_path_from_app not in sys.path:
+    sys.path.append(module_path_from_app)
+if module_path_from_python not in sys.path:
+    sys.path.append(module_path_from_python)
 
 from geopy.geocoders import Nominatim
 

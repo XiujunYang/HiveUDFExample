@@ -2,8 +2,8 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>mission</groupId>
-	<artifactId>huaweicloud.udf</artifactId>
+	<groupId>example</groupId>
+	<artifactId>hive.udf</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>cloud_dli_udf</name>
 	
@@ -52,7 +52,7 @@
             <version>4.11</version>
             <scope>test</scope>
         </dependency>
-		<dependency>
+		<!-- <dependency>
 		    <groupId>org.geotools</groupId>
 		    <artifactId>gt-shapefile</artifactId>
 		    <version>${geotools.version}</version>
@@ -61,7 +61,7 @@
 		    <groupId>org.geotools</groupId>
 		    <artifactId>gt-swing</artifactId>
 		    <version>${geotools.version}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
     		<groupId>org.python</groupId>
     		<artifactId>jython-standalone</artifactId>

@@ -9,4 +9,8 @@ This is sample code to implement UDF,UDAF,UDTF.
 
 	select temp.convert_loc(25.073423, 55.136909,'en');
 	select temp.convert_loc('dubai mall', 'en');
+	
+	DROP FUNCTION temp.list_timeperiod;
+	CREATE FUNCTION temp.list_timeperiod AS 'example.hive.udf.timeperiod.ListTimePeriodUDAFResolver' USING JAR 's3a://PATH_TO_JAR';
+	select id, temp.list_timeperiod(start_time, end_time, 'minute', 3) as union_unixtime from temp.test_timestamp group by id;
 	```

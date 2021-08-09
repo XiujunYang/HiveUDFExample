@@ -1,6 +1,7 @@
 package example.hive.udf;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -19,8 +20,10 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 
-public class DecryptOPENSSL {
+public class EncryptAndDecrypt {
 //	PrivateKey privateKey;
 //	PublicKey publicKey;
 //	public DecryptOPENSSL (){
@@ -37,24 +40,6 @@ public class DecryptOPENSSL {
 //		}
 //	}
 	
-	//openssl rsautl -decrypt -inkey private.pem -in key.bin.enc -out key
-	// The rsautl command can be used to sign, verify, encrypt and decrypt data using the RSA algorithm
-	public String decryptByRSA(String privatePEMPath, byte[] input, String outputPath) {
-		try {
-			Cipher decryptCipher = Cipher.getInstance("RSA");
-			PrivateKey privateKey = getPrivatePem(privatePEMPath);
-			decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
-			byte[] decryptedMessageBytes = decryptCipher.doFinal(input);
-			String decryptedMessage = new String(decryptedMessageBytes, StandardCharsets.UTF_8);
-			return decryptedMessage;
-		} catch (InvalidKeySpecException | NoSuchAlgorithmException | NoSuchPaddingException
-				| InvalidKeyException | IllegalBlockSizeException | BadPaddingException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
 	public byte[] encryptByRSA(String publicPEMPath, String input, String outputPath) {
 		try {
 			Cipher encryptCipher = Cipher.getInstance("RSA");
@@ -63,6 +48,8 @@ public class DecryptOPENSSL {
 			byte[] secretMessageBytes = input.getBytes(StandardCharsets.UTF_8);
 			byte[] encryptedMessageBytes = encryptCipher.doFinal(secretMessageBytes);
 //			String encodedMessage = Base64.getEncoder().encodeToString(encryptedMessageBytes);
+			if(StringUtils.isNotEmpty(outputPath))
+				FileUtils.writeByteArrayToFile(new File(outputPath), encryptedMessageBytes);
 			return encryptedMessageBytes;
 		} catch (IOException | InvalidKeySpecException | NoSuchAlgorithmException | NoSuchPaddingException
 				| InvalidKeyException | IllegalBlockSizeException | BadPaddingException e) {
@@ -70,6 +57,39 @@ public class DecryptOPENSSL {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public String decryptByRSA(String privatePEMPath, byte[] input) {
+		try {
+			Cipher decryptCipher = Cipher.getInstance("RSA");
+			PrivateKey privateKey = getPrivatePem(privatePEMPath);
+			decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
+			byte[] decryptedMessageBytes = decryptCipher.doFinal(input);
+			String decryptedMessage = new String(decryptedMessageBytes, StandardCharsets.UTF_8);
+			return decryptedMessage;
+		} catch (InvalidKeySpecException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+				| IllegalBlockSizeException | BadPaddingException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	public void decryptByRSA(String privatePEMPath, String inputPath, String outputPath) {
+		try {
+			Cipher decryptCipher = Cipher.getInstance("RSA");
+			PrivateKey privateKey = getPrivatePem(privatePEMPath);
+			decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
+			File file = new File(inputPath);
+			byte[] bData = FileUtils.readFileToByteArray(file);
+			byte[] decryptedMessageBytes = decryptCipher.doFinal(bData);
+			if (StringUtils.isNotEmpty(outputPath) && decryptedMessageBytes != null)
+				FileUtils.writeByteArrayToFile(new File(outputPath), decryptedMessageBytes);
+		} catch (InvalidKeySpecException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+				| IllegalBlockSizeException | BadPaddingException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public String loadKey(String path) throws IOException {
@@ -107,17 +127,18 @@ public class DecryptOPENSSL {
 	    return privKey;
 	}
 	
-	// openssl enc -d -aes-256-cbc -in test.json.enc -out test.json -pass file:key
-	public byte[] decryptBigFile(String privatePEMPath, String inputPath, String outputPath) {
+	public byte[] enryptSymmetric(String privatePEMPath, String inputPath, String outputPath) {
+		return null;
+	}	
+	public byte[] decryptSymmetric(String privatePEMPath, String inputPath, String outputPath) {
 		return null;
 	}
 	
-	
 	public static void main(String[] args) {
 		String test = "Baeldung secret message";
-		DecryptOPENSSL obj = new DecryptOPENSSL();
+		EncryptAndDecrypt obj = new EncryptAndDecrypt();
 		byte[] encryptedBytes = obj.encryptByRSA("/Users/xiujun/workspace/test/public.pem", test, null);
-		String decryptedStr = obj.decryptByRSA("/Users/xiujun/workspace/test/private8.pem", encryptedBytes, null);
+		String decryptedStr = obj.decryptByRSA("/Users/xiujun/workspace/test/private8.pem", encryptedBytes);
 		System.out.println(decryptedStr);
 	}
 

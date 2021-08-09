@@ -20,7 +20,6 @@ import javax.crypto.NoSuchPaddingException;
 
 import org.apache.commons.codec.binary.Base64;
 
-
 public class DecryptOPENSSL {
 //	PrivateKey privateKey;
 //	PublicKey publicKey;
